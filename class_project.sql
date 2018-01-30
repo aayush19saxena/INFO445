@@ -1,0 +1,123 @@
+CREATE DATABASE airline_aayush_vansh
+
+USE airline_aayush_vansh
+
+CREATE TABLE employee_contact(
+  EmployeeContactID INT IDENTITY(1,1) PRIMARY KEY NOT NULL,
+  FirstName VARCHAR(25) NOT NULL,
+  LastName VARCHAR(25) NOT NULL,
+  Designation VARCHAR(25) NOT NULL
+)
+GO
+
+CREATE TABLE employee_type (
+  EmployeeTypeID INT IDENTITY(1,1) PRIMARY KEY NOT NULL,
+  EmployeeTypeName VARCHAR(100) NOT NULL
+)
+GO
+
+CREATE TABLE employee (
+  EmployeeID INT IDENTITY(1,1) PRIMARY KEY NOT NULL,
+  EmployeeContactID INT FOREIGN KEY REFERENCES employee_contact(EmployeeContactID) NOT NULL,
+  EmployeeTypeID INT FOREIGN KEY REFERENCES employee_type(EmployeeTypeID) NOT NULL
+)
+GO
+
+CREATE TABLE role (
+  RoleID INT IDENTITY(1,1) PRIMARY KEY NOT NULL,
+  RoleName VARCHAR(50) NOT NULL
+)
+
+CREATE TABLE airport (
+  AirportID INT IDENTITY(1,1) PRIMARY KEY NOT NULL,
+  AirportCode VARCHAR(30) NOT NULL,
+  Name VARCHAR(30) NOT NULL,
+  Address VARCHAR(100) NOT NULL
+)
+
+CREATE TABLE travel_doc_type (
+  TravelDocTypeID INT IDENTITY(1,1) PRIMARY KEY NOT NULL,
+  TravelDocTypeName VARCHAR(100) NOT NULL
+)
+
+CREATE TABLE travel_doc (
+  TravelDocID INT IDENTITY(1,1) PRIMARY KEY NOT NULL,
+  TravelDocType INT FOREIGN KEY REFERENCES travel_doc_type(TravelDocTypeID) NOT NULL,
+  ExpiryDate DATE NOT NULL,
+  DateOfBirth DATE NOT NULL,
+  Country VARCHAR(25) NOT NULL,
+  Address VARCHAR(100) NOT NULL
+)
+
+CREATE TABLE customer (
+  CustomerID INT IDENTITY(1,1) PRIMARY KEY NOT NULL,
+  FirstName VARCHAR(50) NOT NULL,
+  LastName VARCHAR(50) NOT NULL,
+  TravelDocID INT FOREIGN KEY REFERENCES travel_doc(TravelDocID) NOT NULL
+)
+
+CREATE TABLE class (
+  ClassID INT IDENTITY(1,1) PRIMARY KEY NOT NULL,
+  ClassName VARCHAR(25) NOT NULL,
+  MealPlan VARCHAR(25) NOT NULL
+)
+
+CREATE TABLE seat_type (
+  SeatTypeID INT IDENTITY(1,1) PRIMARY KEY NOT NULL,
+  SeatTypeName VARCHAR(25) NOT NULL
+)
+
+CREATE TABLE seat (
+  SeatID INT IDENTITY(1,1) PRIMARY KEY NOT NULL,
+  SeatTypeID INT FOREIGN KEY REFERENCES seat_type(SeatTypeID) NOT NULL,
+  EmergencyRow BIT NOT NULL
+)
+
+CREATE TABLE manufacturer (
+  ManufacturerID INT IDENTITY(1,1) PRIMARY KEY NOT NULL,
+  ManufacturerName VARCHAR(50) NOT NULL
+)
+
+CREATE TABLE aircraft_model (
+  ModelID INT IDENTITY(1,1) PRIMARY KEY NOT NULL,
+  ModelNumber VARCHAR(25) NOT NULL,
+  ManufacturerID INT FOREIGN KEY REFERENCES manufacturer(ManufacturerID) NOT NULL,
+  PassengerCapacity INT NOT NULL,
+  CargoCapacity INT NOT NULL,
+  FuelCapacity INT NOT NULL
+)
+
+CREATE TABLE schedule (
+  ScheduleID INT IDENTITY(1,1) PRIMARY KEY NOT NULL,
+  EstDepartureTime DATE NOT NULL,
+  EstArrivalTime DATE NOT NULL
+)
+
+CREATE TABLE aircraft(
+  AircraftID INT IDENTITY(1,1) PRIMARY KEY NOT NULL,
+  ModelID INT FOREIGN KEY REFERENCES aircraft_model(ModelID) NOT NULL
+)
+
+CREATE TABLE flight (
+  FlightID INT IDENTITY(1,1) PRIMARY KEY NOT NULL,
+  OriginID INT FOREIGN KEY REFERENCES airport(AirportID) NOT NULL,
+  DestinationID INT FOREIGN KEY REFERENCES airport(AirportID) NOT NULL,
+  AircraftID INT FOREIGN KEY REFERENCES aircraft(AircraftID) NOT NULL,
+  ScheduleID INT FOREIGN KEY REFERENCES schedule(ScheduleID) NOT NULL
+)
+
+CREATE TABLE ticket (
+  TicketID INT IDENTITY(1,1) PRIMARY KEY NOT NULL,
+  FlightID INT FOREIGN KEY REFERENCES flight(FlightID) NOT NULL,
+  CustomerID INT FOREIGN KEY REFERENCES customer(CustomerID) NOT NULL,
+  ClassID INT FOREIGN KEY REFERENCES class(ClassID) NOT NULL,
+  SeatID INT FOREIGN KEY REFERENCES seat(SeatID) NOT NULL,
+  Price INT NOT NULL
+)
+
+CREATE TABLE employee_flight (
+  EmployeeFlightID INT IDENTITY(1,1) NOT NULL,
+  FlightID INT FOREIGN KEY REFERENCES flight(FlightID) NOT NULL,
+  EmployeeID INT FOREIGN KEY REFERENCES employee(EmployeeID) NOT NULL,
+  RoleID INT FOREIGN KEY REFERENCES role(RoleID) NOT NULL
+)
